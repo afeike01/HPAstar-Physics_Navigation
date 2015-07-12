@@ -196,7 +196,6 @@ public class ConnectionGrid : MonoBehaviour
             if (currentNode.visited)
                 break;
             currentNode.ToggleVisited(true);
-            
             if (currentNode == endNode)
                 break;
             gDist += gDistInc;
@@ -248,9 +247,15 @@ public class ConnectionGrid : MonoBehaviour
             Debug.Log("Connection Path is NULL");
 
             if (startNodeInserted)
+            {
                 RemoveNode(startNode);
+            }
+
             if (endNodeInserted)
+            {
                 RemoveNode(endNode);
+            }
+                
             ResetConnectionGrid();
 
             return null;
@@ -263,6 +268,7 @@ public class ConnectionGrid : MonoBehaviour
         {
             nodeList[i].Reset();
         }
+        frontierHeap.Clear();
     }
     public Node InsertNode(Node refNode)
     {
@@ -281,8 +287,6 @@ public class ConnectionGrid : MonoBehaviour
     {
         if (newNode.IsTemporary())
         {
-            ManageNodeList(newNode, false);
-
             for (int i = 0; i < nodeList.Count; i++)
             {
                 Node removeNode = null;
@@ -294,6 +298,7 @@ public class ConnectionGrid : MonoBehaviour
                 if (removeNode != null)
                     nodeList[i].neighbors.Remove(removeNode);
             }
+            ManageNodeList(newNode, false);
         }
 
     }

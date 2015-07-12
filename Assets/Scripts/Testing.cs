@@ -15,6 +15,7 @@ public class Testing : MonoBehaviour
 
     private Node startNode;
     private Node endNode;
+    private bool direction = true;
 
 	// Use this for initialization
 	void Start () 
@@ -42,29 +43,41 @@ public class Testing : MonoBehaviour
     void SpawnUnit()
     {
 
-        
-
-        Grid startGrid = connectionGrid.gridList[1];
-        int index = 500;
-        startNode = startGrid.nodeList[index];
-        endNode = connectionGrid.gridList[2].nodeList[index];
-
-        List<Node> path = connectionGrid.FindMultiGridPath(startNode, endNode);
-        Grid.VisualizePath(path);
-
-        GameObject newUnit = Instantiate(unitPrefab, startNode.GetLocation(), Quaternion.identity) as GameObject;
-        myAgent = newUnit.GetComponent<GridAgent>();
-        myAgent.SetNavigationGrid(startNode.gridParent);
     }
     void MoveUnit()
     {
+        
+
+
+        
+
         if (myAgent == null)
-            return;
+        {
+            Grid startGrid = connectionGrid.gridList[1];
+            int index = 461;
 
-        List<Node> newPath = connectionGrid.FindMultiGridPath(startNode, endNode);
-        Grid.VisualizePath(newPath);
+            startNode = startGrid.nodeList[index];
+            endNode = connectionGrid.gridList[0].nodeList[index];
 
-        myAgent.SetPath(newPath);
+            GameObject newUnit = Instantiate(unitPrefab, startNode.GetLocation(), Quaternion.identity) as GameObject;
+            myAgent = newUnit.GetComponent<GridAgent>();
+            myAgent.SetNavigationGrid(startNode.gridParent);
+            myAgent.SetCurrentNode(startNode);
+        }
+
+        myPath = connectionGrid.FindMultiGridPath(startNode, endNode);
+
+        Grid.VisualizePath(myPath);
+        myAgent.SetPath(myPath);
+
+
+        Grid newEndGrid = startNode.gridParent;
+        startNode = endNode;
+        int newIndex = Random.Range(0, newEndGrid.nodeList.Count - 1);
+        endNode = newEndGrid.nodeList[newIndex];
+        
+        
+        direction = !direction;
 
         
 
