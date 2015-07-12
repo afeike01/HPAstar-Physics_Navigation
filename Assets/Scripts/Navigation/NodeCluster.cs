@@ -114,12 +114,12 @@ public class NodeCluster
                 connectionsHash.Add(connectionKey, newVal);
             if (newVal > 0)
             {
-                
                 startNode.AddNeighbor(endNode);
                 endNode.AddNeighbor(startNode);
                 StorePath(startNode, endNode);
             }
-        }   
+        }
+        
     }
     public void StorePath(Node startNode, Node endNode)
     {

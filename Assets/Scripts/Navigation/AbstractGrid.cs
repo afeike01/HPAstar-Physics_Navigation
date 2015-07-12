@@ -280,21 +280,35 @@ public class AbstractGrid
             newPath.Reverse();
 
             if (startNodeInserted)
+            {
+                
                 RemoveNode(startNode);
+            }
+
             if (endNodeInserted)
+            {
+                
                 RemoveNode(endNode);
+            }
             ResetAbstractGrid();
 
             return newPath;
         }
         else
         {
-            Debug.Log("Abstract Path is NULL");
-
+            
             if (startNodeInserted)
+            {
+                
                 RemoveNode(startNode);
+            }
+
             if (endNodeInserted)
+            {
+                
                 RemoveNode(endNode);
+            }
+                
             ResetAbstractGrid();
 
             return null;
@@ -432,7 +446,6 @@ public class AbstractGrid
         ManageAbstractNodeList(newNode);
         newCluster.ManageAbstractNodes(newNode);
         newCluster.SetAbstractConnections();
-
         
         return newNode;  
     }

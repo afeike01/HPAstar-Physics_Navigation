@@ -163,7 +163,15 @@ public class ConnectionGrid : MonoBehaviour
             if (sNode.gridParent == eNode.gridParent)
             {
                 Grid newGrid = sNode.gridParent;
-                newPath.AddRange(newGrid.FindComplexPath(sNode, eNode));
+
+                sNode = newGrid.LookUpNode(sNode.xVal, sNode.zVal);
+                eNode = newGrid.LookUpNode(eNode.xVal, eNode.zVal);
+
+                List<Node> addedPath = newGrid.FindComplexPath(sNode, eNode);
+                if (addedPath != null)
+                    newPath.AddRange(addedPath);
+                else
+                    Debug.Log("Did not add Null Path");
             }
         }
         return newPath;

@@ -41,10 +41,16 @@ public class Testing : MonoBehaviour
     }
     void SpawnUnit()
     {
+
         
 
-        startNode = connectionGrid.gridList[1].nodeList[556];
-        endNode = connectionGrid.gridList[2].nodeList[546];
+        Grid startGrid = connectionGrid.gridList[1];
+        int index = 500;
+        startNode = startGrid.nodeList[index];
+        endNode = connectionGrid.gridList[2].nodeList[index];
+
+        List<Node> path = connectionGrid.FindMultiGridPath(startNode, endNode);
+        Grid.VisualizePath(path);
 
         GameObject newUnit = Instantiate(unitPrefab, startNode.GetLocation(), Quaternion.identity) as GameObject;
         myAgent = newUnit.GetComponent<GridAgent>();
