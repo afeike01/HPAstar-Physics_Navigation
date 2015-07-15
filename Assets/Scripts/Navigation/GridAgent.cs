@@ -11,12 +11,20 @@ public class GridAgent : MonoBehaviour
     public List<Node> agentPath=new List<Node>();
     public Node currentNode;
     public Node lastNode;
-    public Grid mainGrid;
+    public ConnectionGrid mainGrid;
 
     public float distFromNextNode;
+
     public float switchNodeDist = .5f;
+    public float moveSwitchDist = 4f;
+    public float jumpSwitchDist = .25f;
+    public float resetPathDist = 10f;
 
     private Rigidbody rB;
+
+    public Vector3 currentVelocity;
+    public float currentMagnitude;
+    public bool isGrounded = true;
 
     //private Unit unitComponent;
 
@@ -41,37 +49,72 @@ public class GridAgent : MonoBehaviour
     }
     private void UpdateMovement()
     {
+        if (transform.position.y < -10)
+        {
+            Destroy(this.gameObject);
+        }
+            
+
+        if (rB != null)
+        {
+            currentVelocity = rB.velocity;
+            currentMagnitude = currentVelocity.magnitude;
+            if (currentMagnitude == 0 && !isGrounded)
+            {
+                ToggleIsGrounded(true);
+            }
+        }
+            
         if (okToMove && agentPath.Count > 0)
         {
             currentNode = agentPath[0];
             distFromNextNode = Vector3.Distance(transform.position, currentNode.GetLocation());
 
-            if (rB.isKinematic)
-            {
-                transform.Translate(Vector3.forward * movementSpeed * Time.deltaTime);
-
-                Vector3 newPosition = currentNode.GetLocation() - transform.position;
-                Quaternion newRotation = Quaternion.LookRotation(newPosition);
-                transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * rotationSpeed);
-            }
-            
+            switchNodeDist = (rB.useGravity&&!isGrounded) ? jumpSwitchDist : moveSwitchDist;
 
             if (distFromNextNode < switchNodeDist)
             {
-                if (!rB.isKinematic)
-                    rB.isKinematic = true;
                 lastNode = agentPath[0];
-                if (agentPath.Count>1&&lastNode.gridParent != agentPath[1].gridParent)
-                    Launch(agentPath[1].GetLocation());
+
+                //Make GridAgent Jump to another Grid
+                if (agentPath.Count > 1 && lastNode.gridParent != agentPath[1].gridParent)
+                {
+                    /*if (!rB.useGravity)
+                        ToggleGravity(true);*/
+                    ResetVelocity();
+                    Launch(agentPath[1].GetLocation(), 2);
+                }
+                
                 agentPath.RemoveAt(0);
+                //GridAgent has reached Destination
                 if (agentPath.Count < 1)
                 {
                     ToggleOkToMove(false);
+                    ResetVelocity();
+                    ToggleGravity(true);
                 }
             }
+            else if (distFromNextNode >= resetPathDist && isGrounded)
+            {
+                //Debug.Log("Need to Find a new Path");
+                Node newEndNode = agentPath[agentPath.Count - 1];
+                GetPath(newEndNode);
+            }
+            if (isGrounded)
+            {
+                if (currentNode != null)
+                {
+                    Vector3 newDirection = ((currentNode.GetLocation() - transform.position).normalized);
+                    rB.MovePosition(transform.position + newDirection * movementSpeed * Time.deltaTime);
+                    Quaternion newRotation = Quaternion.LookRotation(newDirection);
+                    Quaternion newSmoothRotation = Quaternion.Slerp(transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
+                    rB.MoveRotation(newSmoothRotation);
+                }
+                
+            }
+            
         }
     }
-    
     private void ExecuteMove()
     {
         ToggleOkToMove(true);
@@ -80,12 +123,15 @@ public class GridAgent : MonoBehaviour
     public void GetPath(Node endNode)
     {
         agentPath.Clear();
-        if (currentNode == null)
+        SetCurrentNode();
+        Node startNode = mainGrid.GetNodeFromLocation(transform.position);
+        if (startNode != null)
+            agentPath = mainGrid.FindMultiGridPath(startNode, endNode);
+        else
         {
-            SetCurrentNode();
+            Debug.Log("StartNode is Null");
+            return;
         }
-        Node startNode = mainGrid.LookUpNode(transform.position.x, transform.position.z);
-        agentPath = mainGrid.FindComplexPath(startNode, endNode);
         Grid.VisualizePath(agentPath);
         ExecuteMove();
     }
@@ -96,7 +142,7 @@ public class GridAgent : MonoBehaviour
         {
             SetCurrentNode();
         }
-        agentPath = newPath;
+        agentPath = new List<Node>(newPath);
         ExecuteMove();
     }
     public void SetCurrentNode(Node newNode=null)
@@ -107,13 +153,10 @@ public class GridAgent : MonoBehaviour
         }
         else
         {
-            int xLocation = (int)transform.position.x;
-            int zLocation = (int)transform.position.z;
-            
-            currentNode = mainGrid.LookUpNode(xLocation, zLocation);
+            currentNode = mainGrid.GetNodeFromLocation(transform.position);
         }
     }
-    public void SetNavigationGrid(Grid newGrid)
+    public void SetNavigationGrid(ConnectionGrid newGrid)
     {
         mainGrid = newGrid;
     }
@@ -145,11 +188,23 @@ public class GridAgent : MonoBehaviour
         result.y = v0y;
         return result;
     }
-    private void Launch(Vector3 destination)
+    private void Launch(Vector3 destination, float airTime)
     {
-        Vector3 launchVelocity = GetLaunchVelocity(transform.position, destination, 2);
-        Rigidbody rB = GetComponent<Rigidbody>();
+        Vector3 launchVelocity = GetLaunchVelocity(transform.position, destination, airTime);
+        rB.AddForce(launchVelocity, ForceMode.VelocityChange);
+        ToggleIsGrounded(false);
+    }
+    private void ResetVelocity()
+    {
+        rB.isKinematic = true;
         rB.isKinematic = false;
-        GetComponent<Rigidbody>().AddForce(launchVelocity, ForceMode.VelocityChange);
+    }
+    private void ToggleGravity(bool newVal)
+    {
+        rB.useGravity = newVal;
+    }
+    private void ToggleIsGrounded(bool newVal)
+    {
+        isGrounded = newVal;
     }
 }

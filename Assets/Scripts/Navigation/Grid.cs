@@ -21,7 +21,7 @@ public class Grid : MonoBehaviour
     public List<Node> nodeList = new List<Node>();
     public Hashtable nodeHash = new Hashtable();
 
-    public int gridSize = 40;
+    public int gridSize = 30;
     public float[] heightMap;
 
     public int clusterSize = 10;
@@ -63,7 +63,7 @@ public class Grid : MonoBehaviour
     }
     private void InitializeGrid()
     {
-        gridSize = (int)GetComponent<Terrain>().terrainData.size.x;
+        //gridSize = (int)GetComponent<Terrain>().terrainData.size.x;
         CreateHeightMap();
 
         int newX = (int)transform.position.x;
@@ -150,7 +150,7 @@ public class Grid : MonoBehaviour
     private void SpawnX(int newX)
     {
         int tempZ = (int)transform.position.z;
-        Node newNode = new Node(this,newX, heightMap[nodeCounter]+transform.position.y, tempZ, NodeType.Normal,nodeCounter);
+        Node newNode = new Node(this,newX, heightMap[nodeCounter], tempZ, NodeType.Normal,nodeCounter);
         nodeList.Add(newNode);
         int nodeKey = GetNodeKey(newNode);
         nodeHash.Add(nodeKey, nodeCounter);
@@ -165,7 +165,7 @@ public class Grid : MonoBehaviour
     }
     private void SpawnZ(int newX, int newZ)
     {
-        Node newNode = new Node(this, newX, heightMap[nodeCounter] + transform.position.y, newZ, NodeType.Normal, nodeCounter);
+        Node newNode = new Node(this, newX, heightMap[nodeCounter], newZ, NodeType.Normal, nodeCounter);
         nodeList.Add(newNode);
         int nodeKey = GetNodeKey(newNode);
         nodeHash.Add(nodeKey, nodeCounter);
@@ -530,15 +530,12 @@ public class Grid : MonoBehaviour
     }
     private void CreateHeightMap()
     {
-        Terrain myTerrain = GetComponent<Terrain>();
         heightMap = new float[gridSize * gridSize];
         for (int i = 0; i < gridSize; i++)
         {
             for (int j = 0; j < gridSize; j++)
             {
-                Vector3 newPos = new Vector3(i, 0, j);
-                newPos.y = myTerrain.SampleHeight(newPos) + Terrain.activeTerrain.GetPosition().y;
-                heightMap[(i * gridSize)+j] = newPos.y;
+                heightMap[(i * gridSize) + j] = transform.position.y;
             }
         }
     }

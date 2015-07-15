@@ -152,33 +152,42 @@ public class ConnectionGrid : MonoBehaviour
     }
     public List<Node> FindMultiGridPath(Node startNode, Node endNode)
     {
-        //This won't work correctly if startNode and endNode have the same gridParent
-        List<Node> newConnectionPath = FindConnectionPath(startNode, endNode);
-        
         List<Node> newPath = new List<Node>();
-        for (int i = 0; i < newConnectionPath.Count - 1; i++)
+
+        if (startNode.gridParent != endNode.gridParent)
         {
-            Node sNode = newConnectionPath[i];
-            Node eNode = newConnectionPath[i + 1];
-            if (sNode.gridParent == eNode.gridParent)
+            List<Node> newConnectionPath = FindConnectionPath(startNode, endNode);
+
+
+            for (int i = 0; i < newConnectionPath.Count - 1; i++)
             {
-                Grid newGrid = sNode.gridParent;
+                Node sNode = newConnectionPath[i];
+                Node eNode = newConnectionPath[i + 1];
+                if (sNode.gridParent == eNode.gridParent)
+                {
+                    Grid newGrid = sNode.gridParent;
 
-                sNode = newGrid.LookUpNode(sNode.xVal, sNode.zVal);
-                eNode = newGrid.LookUpNode(eNode.xVal, eNode.zVal);
+                    sNode = newGrid.LookUpNode(sNode.xVal, sNode.zVal);
+                    eNode = newGrid.LookUpNode(eNode.xVal, eNode.zVal);
 
-                List<Node> addedPath = newGrid.FindComplexPath(sNode, eNode);
-                if (addedPath != null)
-                    newPath.AddRange(addedPath);
-                else
-                    Debug.Log("Did not add Null Path");
+                    List<Node> addedPath = newGrid.FindComplexPath(sNode, eNode);
+                    if (addedPath != null)
+                        newPath.AddRange(addedPath);
+                    else
+                        Debug.Log("Did not add Null Path");
+                }
             }
         }
+        else
+        {
+            Grid newGrid = startNode.gridParent;
+            newPath = newGrid.FindComplexPath(startNode, endNode);
+        }
+        
         return newPath;
     }
     public List<Node> FindConnectionPath(Node sNode, Node eNode)
     {
-
 
         bool startNodeInserted = (this.LookUpNode(sNode.xVal, sNode.zVal) == null);
         bool endNodeInserted = (this.LookUpNode(eNode.xVal, eNode.zVal) == null);
@@ -309,5 +318,23 @@ public class ConnectionGrid : MonoBehaviour
         {
             Initialize();
         }
+    }
+    public Node GetNodeFromLocation(Vector3 location)
+    {
+        Node newNode = null;
+        int xVal = (int)location.x;
+        int zVal = (int)location.z;
+
+        for (int i = 0; i < gridList.Count; i++)
+        {
+            Node tempNode = gridList[i].LookUpNode(xVal, zVal);
+            if (tempNode != null)
+                {
+                    newNode = tempNode;
+                    break;
+                }
+        }
+
+        return newNode;
     }
 }
