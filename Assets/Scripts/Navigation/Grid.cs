@@ -43,14 +43,15 @@ public class Grid : MonoBehaviour
     public GameObject debugLocationVisual;
     public GameObject connectionVisual;
 
+    public GameObject nodePrefab;
+
     //=============================================
     //               ConnectionGrid
     //=============================================
     public ConnectionGrid connectionGrid;
     public GridConnector[] connectors;
     public List<Node> connectionNodes = new List<Node>();
-    /*public Grid previousGrid;
-    public bool visited = false;*/
+
 
 	void Start () 
     {
@@ -85,7 +86,52 @@ public class Grid : MonoBehaviour
 
         connectionGrid.ManageGridList(this);
 
+        /*
+         * ==========================================
+         * Theses are the Nodes that need to be PERMANENT!
+         * Spawned Prefab is just for Debugging right now!
+         * ==========================================
+         * 
+         * 
+         */
 
+        int startX = (int)transform.position.x;
+        int currentX = startX;
+        bool toNewCluster = false;
+        while (currentX < startX + gridSize)
+        {
+            int increment = (toNewCluster) ? 1 : (clusterSize - 1);
+            for (int i = (int)transform.position.z; i < (int)transform.position.z + gridSize; i++)
+            {
+                Node newNode = LookUpNode(currentX, i);
+                if (newNode != null)
+                {
+                    GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+                }
+            }
+            currentX += increment;
+            toNewCluster = !toNewCluster;
+        }
+
+        int startZ = (int)transform.position.z;
+        int currentZ = startZ;
+        toNewCluster = false;
+        while (currentZ < startZ + gridSize)
+        {
+            int increment = (toNewCluster) ? 1 : (clusterSize - 1);
+            for (int i = (int)transform.position.x; i < (int)transform.position.x + gridSize; i++)
+            {
+                Node newNode = LookUpNode(i, currentZ);
+                if (newNode != null)
+                {
+                    GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+                }
+            }
+            currentZ += increment;
+            toNewCluster = !toNewCluster;
+        }
+
+        //==============================================
     }
     private AbstractGrid CreateAbstractGrid()
     {
@@ -256,6 +302,10 @@ public class Grid : MonoBehaviour
         }
         
     }
+    /*
+     * AreNodesWithinSameCluster(Node, Node) is used to assign neighbors correctly 
+     * before the NodeClusters of the AbstractGrid are created.
+     */
     private bool AreNodesWithinSameCluster(Node newNode, Node checkNode)
     {
         
@@ -302,22 +352,7 @@ public class Grid : MonoBehaviour
         }
         else
             return false;
-        //This only works when Grid is at (0,0) and clusterSize ==10
-        /*int nX = newNode.xVal;
-        int nZ = newNode.zVal;
-
-        int cX = checkNode.xVal;
-        int cZ = checkNode.zVal;
-
-        if (cX % clusterSize == 0 && cX > nX)
-            return false;
-        if (cZ % clusterSize == 0 && cZ > nZ)
-            return false;
-        if (nX % clusterSize == 0 && nX > cX)
-            return false;
-        if (nZ % clusterSize == 0 && nZ > cZ)
-            return false;
-        return true;*/
+        
     }
     public List<Node> FindComplexPath(Node startNode, Node endNode)
     {

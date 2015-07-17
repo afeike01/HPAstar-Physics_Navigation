@@ -46,7 +46,8 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\DelayDestroy.cs" />
+     <Compile Include="Assets\Scripts\Misc\DelayDestroy.cs" />
+     <Compile Include="Assets\Scripts\Misc\Testing.cs" />
      <Compile Include="Assets\Scripts\Navigation\AbstractGrid.cs" />
      <Compile Include="Assets\Scripts\Navigation\BinaryHeap.cs" />
      <Compile Include="Assets\Scripts\Navigation\ConnectionGrid.cs" />
@@ -55,13 +56,21 @@
      <Compile Include="Assets\Scripts\Navigation\GridConnector.cs" />
      <Compile Include="Assets\Scripts\Navigation\Node.cs" />
      <Compile Include="Assets\Scripts\Navigation\NodeCluster.cs" />
-     <Compile Include="Assets\Scripts\Testing.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
+     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />
+     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
+     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iossupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">
+      <Project>{B9720274-BF92-2920-83DF-A2C56FA932B7}</Project>      <Name>Assembly-CSharp-firstpass-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

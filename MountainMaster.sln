@@ -1,6 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2008
 
+Project("{E8D914CE-773F-ADDB-E80C-0F9E7F17E05C}") = "MountainMaster", "Assembly-CSharp-firstpass.csproj", "{B9720274-BF92-2920-83DF-A2C56FA932B7}"
+EndProject
 Project("{E8D914CE-773F-ADDB-E80C-0F9E7F17E05C}") = "MountainMaster", "Assembly-CSharp.csproj", "{278C8802-291E-A00F-8DDF-ED9BDDFEB3E9}"
 EndProject
 Project("{E8D914CE-773F-ADDB-E80C-0F9E7F17E05C}") = "MountainMaster", "Assembly-CSharp-Editor.csproj", "{A25913C2-DFAC-6B5A-391F-94D8910BCFD3}"
@@ -11,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9720274-BF92-2920-83DF-A2C56FA932B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9720274-BF92-2920-83DF-A2C56FA932B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9720274-BF92-2920-83DF-A2C56FA932B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9720274-BF92-2920-83DF-A2C56FA932B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{278C8802-291E-A00F-8DDF-ED9BDDFEB3E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{278C8802-291E-A00F-8DDF-ED9BDDFEB3E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{278C8802-291E-A00F-8DDF-ED9BDDFEB3E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -23,7 +29,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																				GlobalSection(MonoDevelopProperties) = preSolution
+																													GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1

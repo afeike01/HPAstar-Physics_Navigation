@@ -94,11 +94,13 @@ public class GridAgent : MonoBehaviour
                     ToggleGravity(true);
                 }
             }
-            else if (distFromNextNode >= resetPathDist && isGrounded)
+            else if (distFromNextNode >= resetPathDist && isGrounded&&currentMagnitude==0)
             {
                 //Debug.Log("Need to Find a new Path");
                 Node newEndNode = agentPath[agentPath.Count - 1];
-                GetPath(newEndNode);
+                Node startNode = mainGrid.GetNodeFromLocation(transform.position);
+                if(startNode!=null&&startNode.gridParent==newEndNode.gridParent)
+                    GetPath(newEndNode);
             }
             if (isGrounded)
             {
@@ -129,8 +131,18 @@ public class GridAgent : MonoBehaviour
             agentPath = mainGrid.FindMultiGridPath(startNode, endNode);
         else
         {
-            Debug.Log("StartNode is Null");
-            return;
+            startNode = mainGrid.GetClosestConnectionNode(transform.position);
+            if (startNode != null)
+            {
+                agentPath = mainGrid.FindMultiGridPath(startNode, endNode);
+                Debug.Log("Location was Out of Bounds.  Found Closest Entrance");
+            }
+                
+            else
+            {
+                Debug.Log("StartNode is Null");
+                return;
+            }
         }
         Grid.VisualizePath(agentPath);
         ExecuteMove();

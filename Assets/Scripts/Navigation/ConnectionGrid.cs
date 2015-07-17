@@ -26,13 +26,7 @@ public class ConnectionGrid : MonoBehaviour
         SetConnectionNodeNeighbors();
         SetConnections();
 
-        //Setting startNode to: gridList[2].nodeList[250] caused as Error
-        //CHECK THIS OUT
-
-        /*Node startNode = gridList[2].nodeList[401];
-        Node endNode = gridList[1].nodeList[131];
-        List<Node> newPath = FindMultiGridPath(startNode, endNode);
-        Grid.VisualizePath(newPath);*/
+        
     }
     
     public Node LookUpNode(int newX, int newZ)
@@ -336,5 +330,20 @@ public class ConnectionGrid : MonoBehaviour
         }
 
         return newNode;
+    }
+    public Node GetClosestConnectionNode(Vector3 location)
+    {
+        Node closestNode = null;
+        float closestDist = 1000000;
+        for (int i = 0; i < nodeList.Count; i++)
+        {
+            float tempDist = Vector3.Distance(location, nodeList[i].GetLocation());
+            if (tempDist < closestDist)
+            {
+                closestDist = tempDist;
+                closestNode = nodeList[i];
+            }
+        }
+        return closestNode;
     }
 }

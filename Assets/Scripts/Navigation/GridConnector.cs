@@ -28,7 +28,22 @@ public class GridConnector : MonoBehaviour
         int x_01 = (int)connection_01.position.x;
         int z_01 = (int)connection_01.position.z;
 
-        NodeCluster nc_01 = abstractGrid_01.GetNodeClusterFromLocation(x_01, z_01);
+        Node tempNode = abstractGrid_01.mainGrid.LookUpNode(x_01, z_01);
+        NodeCluster tempCluster = tempNode.clusterParent;
+        Node closestNode = tempCluster.nodeList[0];
+        float closestDist = 1000000;
+        for (int i = 0; i < tempCluster.nodeList.Count; i++)
+        {
+            float tempDist = Vector3.Distance(tempNode.GetLocation(), tempCluster.nodeList[i].GetLocation());
+            if (tempDist < closestDist)
+            {
+                closestDist = tempDist;
+                closestNode = tempCluster.nodeList[i];
+            }
+        }
+        node_01 = closestNode;
+
+        /*NodeCluster nc_01 = abstractGrid_01.GetNodeClusterFromLocation(x_01, z_01);
         Node closestNode = nc_01.nodeList[0];
         float closestDistance = 100000000;
         for (int i = 0; i < nc_01.nodeList.Count; i++)
@@ -40,12 +55,27 @@ public class GridConnector : MonoBehaviour
                 closestNode = nc_01.nodeList[i];
             }
         }
-        node_01 = closestNode;
+        node_01 = closestNode;*/
 
         int x_02 = (int)connection_02.position.x;
         int z_02 = (int)connection_02.position.z;
 
-        NodeCluster nc_02 = abstractGrid_02.GetNodeClusterFromLocation(x_02, z_02);
+        Node tempNode2 = abstractGrid_02.mainGrid.LookUpNode(x_02, z_02);
+        NodeCluster tempCluster2 = tempNode2.clusterParent;
+        Node closestNode2 = tempCluster2.nodeList[0];
+        float closestDist2 = 1000000;
+        for (int i = 0; i < tempCluster2.nodeList.Count; i++)
+        {
+            float tempDist = Vector3.Distance(tempNode2.GetLocation(), tempCluster2.nodeList[i].GetLocation());
+            if (tempDist < closestDist2)
+            {
+                closestDist2 = tempDist;
+                closestNode2 = tempCluster2.nodeList[i];
+            }
+        }
+        node_02 = closestNode2;
+
+        /*NodeCluster nc_02 = abstractGrid_02.GetNodeClusterFromLocation(x_02, z_02);
         closestNode = nc_02.nodeList[0];
         closestDistance = 100000000;
         for (int i = 0; i < nc_02.nodeList.Count; i++)
@@ -57,7 +87,7 @@ public class GridConnector : MonoBehaviour
                 closestNode = nc_02.nodeList[i];
             }
         }
-        node_02 = closestNode;
+        node_02 = closestNode;*/
 
         node_01.SetConnection(node_02);
         node_02.SetConnection(node_01);

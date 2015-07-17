@@ -47,6 +47,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor\CrossPlatformInput\CrossPlatformInputInitialize.cs" />
+     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />
+     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
+     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -88,6 +92,8 @@
  </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{B9720274-BF92-2920-83DF-A2C56FA932B7}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{278C8802-291E-A00F-8DDF-ED9BDDFEB3E9}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
