@@ -26,6 +26,8 @@ public class GridAgent : MonoBehaviour
     public float currentMagnitude;
     public bool isGrounded = true;
 
+    private int navUpdateCounter;
+    private int navUpdateTimer = 0;
     //private Unit unitComponent;
 
     //private int surroundingNodeIndex = 0;
@@ -39,22 +41,27 @@ public class GridAgent : MonoBehaviour
 	void Update () 
     {
         UpdateMovement();
-            
 	}
     
     private void Initialize()
     {
         rB = GetComponent<Rigidbody>();
-        
+        navUpdateCounter = Random.Range(50, 150);
     }
     private void UpdateMovement()
     {
+        navUpdateTimer++;
+        if (navUpdateTimer >= navUpdateCounter)
+        {
+            navUpdateTimer = 0;
+            Node newDestination = mainGrid.GetPlayerLocation();
+            GetPath(newDestination);
+        }
         if (transform.position.y < -10)
         {
             Destroy(this.gameObject);
         }
             
-
         if (rB != null)
         {
             currentVelocity = rB.velocity;
@@ -65,7 +72,7 @@ public class GridAgent : MonoBehaviour
             }
         }
             
-        if (okToMove && agentPath.Count > 0)
+        if (okToMove &&agentPath!=null&& agentPath.Count > 0)
         {
             currentNode = agentPath[0];
             distFromNextNode = Vector3.Distance(transform.position, currentNode.GetLocation());
@@ -119,12 +126,16 @@ public class GridAgent : MonoBehaviour
     }
     private void ExecuteMove()
     {
-        ToggleOkToMove(true);
+        if(agentPath!=null)
+            ToggleOkToMove(true);
         
     }
     public void GetPath(Node endNode)
     {
-        agentPath.Clear();
+        if(agentPath!=null)
+            agentPath.Clear();
+        if (endNode == null)
+            return;
         SetCurrentNode();
         Node startNode = mainGrid.GetNodeFromLocation(transform.position);
         if (startNode != null)
@@ -135,7 +146,7 @@ public class GridAgent : MonoBehaviour
             if (startNode != null)
             {
                 agentPath = mainGrid.FindMultiGridPath(startNode, endNode);
-                Debug.Log("Location was Out of Bounds.  Found Closest Entrance");
+                //Debug.Log("Location was Out of Bounds.  Found Closest Entrance");
             }
                 
             else
@@ -144,7 +155,7 @@ public class GridAgent : MonoBehaviour
                 return;
             }
         }
-        Grid.VisualizePath(agentPath);
+        //Grid.VisualizePath(agentPath);
         ExecuteMove();
     }
     public void SetPath(List<Node> newPath)

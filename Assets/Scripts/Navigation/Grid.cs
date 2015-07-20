@@ -44,7 +44,7 @@ public class Grid : MonoBehaviour
     public GameObject connectionVisual;
 
     public GameObject nodePrefab;
-
+    public GameObject nodePrefab02;
     //=============================================
     //               ConnectionGrid
     //=============================================
@@ -64,7 +64,6 @@ public class Grid : MonoBehaviour
     }
     private void InitializeGrid()
     {
-        //gridSize = (int)GetComponent<Terrain>().terrainData.size.x;
         CreateHeightMap();
 
         int newX = (int)transform.position.x;
@@ -85,16 +84,12 @@ public class Grid : MonoBehaviour
         }
 
         connectionGrid.ManageGridList(this);
-
-        /*
-         * ==========================================
-         * Theses are the Nodes that need to be PERMANENT!
-         * Spawned Prefab is just for Debugging right now!
-         * ==========================================
-         * 
-         * 
-         */
-
+        SetPermanentNodes();
+        
+    }
+    private void SetPermanentNodes()
+    {
+        
         int startX = (int)transform.position.x;
         int currentX = startX;
         bool toNewCluster = false;
@@ -106,7 +101,8 @@ public class Grid : MonoBehaviour
                 Node newNode = LookUpNode(currentX, i);
                 if (newNode != null)
                 {
-                    GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+                    newNode.SetPermanent(true);
+                    //GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
                 }
             }
             currentX += increment;
@@ -124,15 +120,15 @@ public class Grid : MonoBehaviour
                 Node newNode = LookUpNode(i, currentZ);
                 if (newNode != null)
                 {
-                    GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+                    newNode.SetPermanent(true);
+                    //GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
                 }
             }
             currentZ += increment;
             toNewCluster = !toNewCluster;
         }
-
-        //==============================================
     }
+    
     private AbstractGrid CreateAbstractGrid()
     {
         return new AbstractGrid(this, clusterSize);
@@ -202,6 +198,8 @@ public class Grid : MonoBehaviour
         nodeHash.Add(nodeKey, nodeCounter);
         nodeCounter++;
 
+        GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+
         int newZ = tempZ + 1;
         for (int i = 0; i < gridSize - 1; ++i)
         {
@@ -216,6 +214,9 @@ public class Grid : MonoBehaviour
         int nodeKey = GetNodeKey(newNode);
         nodeHash.Add(nodeKey, nodeCounter);
         nodeCounter++;
+
+        GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+
     }
     public static int GetNodeKey(Node newNode)
     {

@@ -132,12 +132,49 @@ public class NodeCluster
             int connectionKey = GetConnectionKey(startNode, endNode);
             if (!storedPaths.Contains(connectionKey) && newPath != null)
             {
-                storedPaths.Add(connectionKey, newPath);
-                
+                storedPaths.Add(connectionKey, newPath); 
             }
         }
     }
-    
+    public void StoreRefreshedPath(Node startNode, Node endNode)
+    {
+        if (!startNode.IsTemporary() && !endNode.IsTemporary())
+        {
+            Node refStartNode = mainAbstractGrid.mainGrid.LookUpNode(startNode.xVal, startNode.zVal);
+            Node refEndNode = mainAbstractGrid.mainGrid.LookUpNode(endNode.xVal, endNode.zVal);
+
+            List<Node> newPath = mainAbstractGrid.mainGrid.FindPath(refStartNode, refEndNode);
+            int connectionKey = GetConnectionKey(startNode, endNode);
+            if (newPath != null)
+            {
+                storedPaths[connectionKey] = newPath;
+            }
+        }
+    }
+    public void RefreshPaths(Node newNode)
+    {
+        List<int> pathsToRefresh = new List<int>();
+        foreach (int connectionKey in storedPaths.Keys)
+        {
+            List<Node> path = storedPaths[connectionKey] as List<Node>;
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (path[i].xVal == newNode.xVal && path[i].zVal == newNode.zVal)
+                {
+                    pathsToRefresh.Add(connectionKey);
+                }
+            }
+            /*if (path.Contains(newNode))
+            {
+                pathsToRefresh.Add(connectionKey);
+            }*/
+        }
+        for (int i = 0; i < pathsToRefresh.Count; i++)
+        {
+            List<Node> path = storedPaths[pathsToRefresh[i]] as List<Node>;
+            StoreRefreshedPath(path[0], path[path.Count - 1]);
+        }
+    }
     public void SetAbstractConnections()
     {
         for (int i = 0; i < nodeList.Count; i++)

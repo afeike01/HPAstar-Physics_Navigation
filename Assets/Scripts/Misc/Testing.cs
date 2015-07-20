@@ -59,14 +59,28 @@ public class Testing : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Rigidbody newRB = hit.collider.gameObject.GetComponent<Rigidbody>();
+                RigidbodyControl rBC = hit.collider.gameObject.GetComponent<RigidbodyControl>();
                 if (newRB)
                 {
 
                     newRB.AddForceAtPosition(-hit.normal*250, hit.point);
                 }
+                if (rBC)
+                {
+                    if (connectionGrid.DisableNode(hit.collider.gameObject.transform.position))
+                    {
+                        rBC.ActivateRigidbody();
+                    }
+                }
             }
         }
 	}
+    public Node GetPlayerLocation()
+    {
+        Vector3 playerLocation = player.gameObject.transform.position;
+        Node newNode = connectionGrid.GetNodeFromLocation(playerLocation);
+        return newNode;
+    }
     void Execute()
     {
         

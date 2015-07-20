@@ -35,7 +35,7 @@ public class Node : IComparable<Node>
     public NodeType level;
 
     private bool isTemporary = false;
-    
+    private bool isPermanent = false;
 
 
     public Node(Grid newGrid, int newX, float newY, int newZ, NodeType nodeLevel,int num)
@@ -132,5 +132,13 @@ public class Node : IComparable<Node>
     {
         nodeConnectingTo = newNode;
         gridConnectingTo = newNode.gridParent;
+    }
+    public bool IsPermanent()
+    {
+        return isPermanent;
+    }
+    public void SetPermanent(bool newVal)
+    {
+        isPermanent = newVal;
     }
 }

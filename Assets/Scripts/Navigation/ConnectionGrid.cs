@@ -16,11 +16,14 @@ public class ConnectionGrid : MonoBehaviour
     int nodeCounter = 0;
     public List<Grid> gridsInScene = new List<Grid>();
 
+    public Testing temporaryController;
+
 	// Use this for initialization
 	void Start () 
     {
 	
 	}
+    
     private void Initialize()
     {
         SetConnectionNodeNeighbors();
@@ -28,7 +31,21 @@ public class ConnectionGrid : MonoBehaviour
 
         
     }
-    
+    public Node GetPlayerLocation()
+    {
+        return temporaryController.GetPlayerLocation();
+    }
+    public bool DisableNode(Vector3 nodeLocation)
+    {
+        Node newNode = GetNodeFromLocation(nodeLocation);
+        if (newNode != null && !newNode.IsPermanent())
+        {
+            newNode.ToggleAvailable(false);
+            newNode.clusterParent.RefreshPaths(newNode);
+            return true;
+        }
+        return false;
+    }
     public Node LookUpNode(int newX, int newZ)
     {
         int nodeKey = Grid.GetNodeKey(newX, newZ);
@@ -167,8 +184,8 @@ public class ConnectionGrid : MonoBehaviour
                     List<Node> addedPath = newGrid.FindComplexPath(sNode, eNode);
                     if (addedPath != null)
                         newPath.AddRange(addedPath);
-                    else
-                        Debug.Log("Did not add Null Path");
+                    /*else
+                        Debug.Log("Did not add Null Path");*/
                 }
             }
         }
