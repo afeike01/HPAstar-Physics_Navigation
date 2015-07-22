@@ -24,7 +24,7 @@ public class RigidbodyControl : MonoBehaviour
             {
                 rB.isKinematic = false;
             }
-            Destroy(this.gameObject, 3f);
+            Destroy(this.gameObject, 10f);
         }
         
     }

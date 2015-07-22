@@ -28,10 +28,10 @@ public class GridAgent : MonoBehaviour
 
     private int navUpdateCounter;
     private int navUpdateTimer = 0;
-    //private Unit unitComponent;
 
-    //private int surroundingNodeIndex = 0;
-	// Use this for initialization
+    private float maxAirTime = 2.5f;
+    private float minAirTime = 1.5f;
+
 	void Start () 
     {
         Initialize();
@@ -86,10 +86,9 @@ public class GridAgent : MonoBehaviour
                 //Make GridAgent Jump to another Grid
                 if (agentPath.Count > 1 && lastNode.gridParent != agentPath[1].gridParent)
                 {
-                    /*if (!rB.useGravity)
-                        ToggleGravity(true);*/
                     ResetVelocity();
-                    Launch(agentPath[1].GetLocation(), 2);
+                    float airTime = 2f;// Random.Range(minAirTime, maxAirTime);
+                    Launch(agentPath[1].GetLocation(), airTime);
                 }
                 
                 agentPath.RemoveAt(0);

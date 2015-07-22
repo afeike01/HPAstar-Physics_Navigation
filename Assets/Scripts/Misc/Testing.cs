@@ -22,6 +22,28 @@ public class Testing : MonoBehaviour
 
     public GameObject player;
 
+    public Transform targetTransform;
+    private Vector3 target;
+    private float x = 0.0f;
+    private float y = 0.0f;
+    public float xSpeed = 250.0f;
+    public float ySpeed = 120.0f;
+    public float yMinLimit = -20;
+    public float yMaxLimit = 80;
+    public float distance = 10.0f;
+
+    public float XSensitivity = 2f;
+    public float YSensitivity = 2f;
+    private Quaternion m_CharacterTargetRot;
+    private Quaternion m_CameraTargetRot;
+    public bool clampVerticalRotation = true;
+    public float MinimumX = -90F;
+    public float MaximumX = 90F;
+    public bool smooth;
+    public float smoothTime = 5f;
+
+    public GameObject physicsExplosionPrefab;
+
 	// Use this for initialization
 	void Start () 
     {
@@ -74,23 +96,24 @@ public class Testing : MonoBehaviour
                 }
             }
         }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            GameObject newExplosion = Instantiate(physicsExplosionPrefab, player.transform.position, Quaternion.identity) as GameObject;
+            PhysicsExplosion newPExplosion = newExplosion.GetComponent<PhysicsExplosion>();
+            newPExplosion.Initialize(connectionGrid);
+        }
 	}
+    
     public Node GetPlayerLocation()
     {
         Vector3 playerLocation = player.gameObject.transform.position;
         Node newNode = connectionGrid.GetNodeFromLocation(playerLocation);
         return newNode;
     }
-    void Execute()
-    {
-        
-    }
     void SpawnUnit()
     {
         Grid startGrid = connectionGrid.gridList[1];
-        int index = 461;
-        startNode = startGrid.nodeList[index];
-        endNode = connectionGrid.gridList[0].nodeList[index];
+        startNode = startGrid.LookUpNode(startGrid.transform.position.x + (startGrid.gridSize / 2), startGrid.transform.position.z + (startGrid.gridSize / 2));
 
         float range = 10f;
 

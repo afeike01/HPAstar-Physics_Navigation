@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\Navigation\GridConnector.cs" />
      <Compile Include="Assets\Scripts\Navigation\Node.cs" />
      <Compile Include="Assets\Scripts\Navigation\NodeCluster.cs" />
+     <Compile Include="Assets\Scripts\Player\PhysicsExplosion.cs" />
      <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />

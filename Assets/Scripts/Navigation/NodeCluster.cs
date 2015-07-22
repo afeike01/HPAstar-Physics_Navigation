@@ -13,8 +13,9 @@ public class NodeCluster
 
     public List<Node> nodeList = new List<Node>();
 
-    public Hashtable connectionsHash = new Hashtable();
-    public Hashtable storedPaths = new Hashtable();
+    //public Hashtable connectionsHash = new Hashtable();
+    public Dictionary<int,List<Node>> storedPathsDictionary = new Dictionary<int,List<Node>>();
+    //public Hashtable storedPaths = new Hashtable();
 
     private int nodeCounter = 0;
 
@@ -89,15 +90,21 @@ public class NodeCluster
     {
         return startNode.nodeNum + (endNode.nodeNum * 1000);
     }
-    public float GetConnectionValue(Node startNode, Node endNode)
+    /*public float GetConnectionValue(Node startNode, Node endNode)
     {
         return (float)connectionsHash[GetConnectionKey(startNode, endNode)];
-    }
+    }*/
     public List<Node> GetStoredPath(Node startNode, Node endNode)
     {
         int connectionKey = GetConnectionKey(startNode,endNode);
-        List<Node> newPath = storedPaths[connectionKey] as List<Node>;
-        return newPath;
+        if (storedPathsDictionary.ContainsKey(connectionKey))
+        {
+            List<Node> newPath = storedPathsDictionary[connectionKey];
+            return newPath;
+        }
+        else
+            return null;
+        
     }
     public void StoreConnectionValue(Node startNode, Node endNode)
     {
@@ -108,10 +115,10 @@ public class NodeCluster
 
         float newVal = mainAbstractGrid.mainGrid.DoesPathExist(refStartNode, refEndNode);
         int connectionKey = GetConnectionKey(startNode, endNode);
-        if (!connectionsHash.Contains(connectionKey))
+        if (!storedPathsDictionary.ContainsKey(connectionKey))
         {
-            if (!startNode.IsTemporary() && !endNode.IsTemporary()) 
-                connectionsHash.Add(connectionKey, newVal);
+            /*if (!startNode.IsTemporary() && !endNode.IsTemporary()) 
+                connectionsHash.Add(connectionKey, newVal);*/
             if (newVal > 0)
             {
                 startNode.AddNeighbor(endNode);
@@ -130,9 +137,9 @@ public class NodeCluster
 
             List<Node> newPath = mainAbstractGrid.mainGrid.FindPath(refStartNode, refEndNode);
             int connectionKey = GetConnectionKey(startNode, endNode);
-            if (!storedPaths.Contains(connectionKey) && newPath != null)
+            if (!storedPathsDictionary.ContainsKey(connectionKey) && newPath != null)
             {
-                storedPaths.Add(connectionKey, newPath); 
+                storedPathsDictionary.Add(connectionKey, newPath); 
             }
         }
     }
@@ -145,18 +152,18 @@ public class NodeCluster
 
             List<Node> newPath = mainAbstractGrid.mainGrid.FindPath(refStartNode, refEndNode);
             int connectionKey = GetConnectionKey(startNode, endNode);
-            if (newPath != null)
+            if (newPath != null&&storedPathsDictionary.ContainsKey(connectionKey))
             {
-                storedPaths[connectionKey] = newPath;
+                storedPathsDictionary[connectionKey] = newPath;
             }
         }
     }
     public void RefreshPaths(Node newNode)
     {
         List<int> pathsToRefresh = new List<int>();
-        foreach (int connectionKey in storedPaths.Keys)
+        foreach (int connectionKey in storedPathsDictionary.Keys/*int connectionKey in storedPaths.Keys*/)
         {
-            List<Node> path = storedPaths[connectionKey] as List<Node>;
+            List<Node> path = storedPathsDictionary[connectionKey] as List<Node>;
             for (int i = 0; i < path.Count; i++)
             {
                 if (path[i].xVal == newNode.xVal && path[i].zVal == newNode.zVal)
@@ -171,7 +178,7 @@ public class NodeCluster
         }
         for (int i = 0; i < pathsToRefresh.Count; i++)
         {
-            List<Node> path = storedPaths[pathsToRefresh[i]] as List<Node>;
+            List<Node> path = storedPathsDictionary[pathsToRefresh[i]];
             StoreRefreshedPath(path[0], path[path.Count - 1]);
         }
     }

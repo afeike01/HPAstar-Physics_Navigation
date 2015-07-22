@@ -18,8 +18,8 @@ public class Grid : MonoBehaviour
     private float gDist = 0;
     public float gDistInc = 1f;
 
-    public List<Node> nodeList = new List<Node>();
-    public Hashtable nodeHash = new Hashtable();
+    //public List<Node> nodeList = new List<Node>();
+    public Dictionary<int,Node> nodeDictionary = new Dictionary<int,Node>();
 
     public int gridSize = 30;
     public float[] heightMap;
@@ -193,9 +193,9 @@ public class Grid : MonoBehaviour
     {
         int tempZ = (int)transform.position.z;
         Node newNode = new Node(this,newX, heightMap[nodeCounter], tempZ, NodeType.Normal,nodeCounter);
-        nodeList.Add(newNode);
+        //nodeList.Add(newNode);
         int nodeKey = GetNodeKey(newNode);
-        nodeHash.Add(nodeKey, nodeCounter);
+        nodeDictionary.Add(nodeKey, newNode);
         nodeCounter++;
 
         GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
@@ -210,9 +210,9 @@ public class Grid : MonoBehaviour
     private void SpawnZ(int newX, int newZ)
     {
         Node newNode = new Node(this, newX, heightMap[nodeCounter], newZ, NodeType.Normal, nodeCounter);
-        nodeList.Add(newNode);
+        //nodeList.Add(newNode);
         int nodeKey = GetNodeKey(newNode);
-        nodeHash.Add(nodeKey, nodeCounter);
+        nodeDictionary.Add(nodeKey, newNode);
         nodeCounter++;
 
         GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
@@ -229,10 +229,14 @@ public class Grid : MonoBehaviour
     public Node LookUpNode(int newX, int newZ)
     {
         int nodeKey = GetNodeKey(newX, newZ);
-        if (nodeHash.Contains(nodeKey))
+        /*if (nodeHash.Contains(nodeKey))
         {
             int nodeIndex = (int)nodeHash[nodeKey];
             return nodeList[nodeIndex];
+        }*/
+        if (nodeDictionary.ContainsKey(nodeKey))
+        {
+            return nodeDictionary[nodeKey];
         }
         else
         {
@@ -242,10 +246,14 @@ public class Grid : MonoBehaviour
     public Node LookUpNode(float newX, float newZ)
     {
         int nodeKey = GetNodeKey((int)newX, (int)newZ);
-        if (nodeHash.Contains(nodeKey))
+        /*if (nodeHash.Contains(nodeKey))
         {
             int nodeIndex = (int)nodeHash[nodeKey];
             return nodeList[nodeIndex];
+        }*/
+        if (nodeDictionary.ContainsKey(nodeKey))
+        {
+            return nodeDictionary[nodeKey];
         }
         else
         {
@@ -255,51 +263,43 @@ public class Grid : MonoBehaviour
     
     private void AssignAllNeighboors()
     {
-        for (int i = 0; i < nodeList.Count; ++i)
+        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; ++i)
         {
-            Node newNode = nodeList[i];
+            //Node newNode = nodeList[i];
             Node tempNode = null;
             int cSize = clusterSize;
 
             tempNode = LookUpNode(newNode.xVal + 1, newNode.zVal);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal + 1, newNode.zVal));
 
             tempNode = LookUpNode(newNode.xVal - 1, newNode.zVal);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal - 1, newNode.zVal));
 
             tempNode = LookUpNode(newNode.xVal, newNode.zVal + 1);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal, newNode.zVal + 1));
 
             tempNode = LookUpNode(newNode.xVal, newNode.zVal - 1);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal, newNode.zVal - 1));
 
             tempNode = LookUpNode(newNode.xVal + 1, newNode.zVal + 1);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal + 1, newNode.zVal + 1));
 
             tempNode = LookUpNode(newNode.xVal - 1, newNode.zVal - 1);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal - 1, newNode.zVal - 1));
 
             tempNode = LookUpNode(newNode.xVal - 1, newNode.zVal + 1);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal - 1, newNode.zVal + 1));
 
             tempNode = LookUpNode(newNode.xVal + 1, newNode.zVal - 1);
             if (AreNodesWithinSameCluster(newNode, tempNode))
                 newNode.AddNeighbor(tempNode);
-            //newNode.AddNeighbor(LookUpNode(newNode.xVal + 1, newNode.zVal - 1));
         }
         
     }
@@ -557,9 +557,10 @@ public class Grid : MonoBehaviour
     }
     private void ResetGrid()
     {
-        for (int i = 0; i < nodeList.Count; ++i)
+        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; ++i)
         {
-            nodeList[i].Reset();
+            newNode.Reset();
+            //nodeList[i].Reset();
         }
         frontierHeap.Clear();
         
