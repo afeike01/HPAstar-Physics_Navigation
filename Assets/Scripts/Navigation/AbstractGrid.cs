@@ -10,13 +10,8 @@ public class AbstractGrid
     public int abstractGridSize;
     public int clusterSize;
 
-    //public List<NodeCluster> nodeClusterList = new List<NodeCluster>();
-    //public Hashtable nodeClusterHash = new Hashtable();
     public Dictionary<int, NodeCluster> nodeClusterDictionary = new Dictionary<int, NodeCluster>();
-
     public Dictionary<int, Node> nodeDictionary = new Dictionary<int, Node>();
-    //public List<Node> nodeList = new List<Node>();
-    //public Hashtable nodeHash = new Hashtable();
     private BinaryHeap<Node> frontierHeap = new BinaryHeap<Node>();
     private int nodeClusterCounter = 0;
 
@@ -47,15 +42,13 @@ public class AbstractGrid
     }
     private void SpawnX(int newX)
     {
-        int tempZ = (int)mainGrid.transform.position.z;//int tempZ = 0;
+        int tempZ = (int)mainGrid.transform.position.z;
         NodeCluster newNodeCluster = new NodeCluster(this, clusterSize, newX, tempZ);
-        //nodeClusterList.Add(newNodeCluster);
         int nodeClusterKey = GetNodeClusterKey(newNodeCluster.xVal, newNodeCluster.zVal);
-        //nodeClusterHash.Add(nodeClusterKey, nodeClusterCounter);
         nodeClusterDictionary.Add(nodeClusterKey, newNodeCluster);
         nodeClusterCounter++;
 
-        int newZ = tempZ + clusterSize;//int newZ = 1;
+        int newZ = tempZ + clusterSize;
         for (int i = 0; i < abstractGridSize - 1; ++i)
         {
             SpawnZ(newX, newZ);
@@ -65,18 +58,14 @@ public class AbstractGrid
     private void SpawnZ(int newX, int newZ)
     {
         NodeCluster newNodeCluster = new NodeCluster(this, clusterSize, newX, newZ);
-        //nodeClusterList.Add(newNodeCluster);
         int nodeClusterKey = GetNodeClusterKey(newNodeCluster.xVal, newNodeCluster.zVal);
-        //nodeClusterHash.Add(nodeClusterKey, nodeClusterCounter);
         nodeClusterDictionary.Add(nodeClusterKey, newNodeCluster);
         nodeClusterCounter++;
     }
-    public void SetClusterParents(Dictionary<int,Node> nodeDictionary/*List<Node> nodeList*/)
+    public void SetClusterParents(Dictionary<int,Node> nodeDictionary)
     {
-        foreach(Node newNode in nodeDictionary.Values)//for (int h = 0; h < nodeList.Count; h++)
+        foreach(Node newNode in nodeDictionary.Values)
         {
-            //Node newNode = nodeList[h];
-
             int minX = (int)mainGrid.transform.position.x;
             int minZ = (int)mainGrid.transform.position.z;
 
@@ -116,14 +105,12 @@ public class AbstractGrid
         //Cluster Parents must be assigned!!!
         //This will need REVAMPED when some nodes are unavailable, currently does not account for obstacles
         
-        foreach(NodeCluster newCluster in nodeClusterDictionary.Values)//for (int i = 0; i < nodeClusterList.Count; i++)
+        foreach(NodeCluster newCluster in nodeClusterDictionary.Values)
         {
-            //NodeCluster newCluster = nodeClusterList[i];
-
-            int minX = newCluster.xVal;//newCluster.xVal * clusterSize;
-            int minZ = newCluster.zVal;// newCluster.zVal* clusterSize;
-            int maxX = minX + clusterSize-1;//newCluster.xVal*clusterSize + clusterSize - 1;
-            int maxZ = minZ+clusterSize-1;//newCluster.zVal *clusterSize + clusterSize -1;
+            int minX = newCluster.xVal;
+            int minZ = newCluster.zVal;
+            int maxX = minX + clusterSize-1;
+            int maxZ = minZ+clusterSize-1;
 
             newCluster.ManageAbstractNodes(mainGrid.LookUpNode(minX, minZ));
             newCluster.ManageAbstractNodes(mainGrid.LookUpNode(maxX, maxZ));
@@ -139,17 +126,12 @@ public class AbstractGrid
         {
             newCluster.SetAbstractConnections();
         }
-        /*for (int i = 0; i < nodeClusterList.Count; i++)
-        {
-            nodeClusterList[i].SetAbstractConnections();
-        }*/
     }
     public void AssignAbstractNodeNeighbors()
     {
 
-        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; i++)
+        foreach(Node newNode in nodeDictionary.Values)
         {
-            //Node newNode = nodeList[i];
             Node tempNode = null;
 
             tempNode = LookUpAbstractNode(newNode.xVal + 1, newNode.zVal);
@@ -185,11 +167,6 @@ public class AbstractGrid
     public NodeCluster LookUpNodeCluster(int newX, int newZ)
     {
         int nodeClusterKey = GetNodeClusterKey(newX, newZ);
-        /*if (nodeClusterHash.Contains(nodeKey))
-        {
-            int nodeClusterIndex = (int)nodeClusterHash[nodeKey];
-            return nodeClusterList[nodeClusterIndex];
-        }*/
         if (nodeClusterDictionary.ContainsKey(nodeClusterKey))
         {
             return nodeClusterDictionary[nodeClusterKey];
@@ -206,10 +183,6 @@ public class AbstractGrid
     public Node LookUpAbstractNode(int newX, int newZ)
     {
         int nodeKey = newX * 1000 + newZ;
-        /*if (nodeHash.Contains(nodeKey))
-        {
-            return nodeHash[nodeKey] as Node;
-        }*/
         if (nodeDictionary.ContainsKey(nodeKey))
         {
             return nodeDictionary[nodeKey];
@@ -224,15 +197,10 @@ public class AbstractGrid
         int nodeKey = GetAbstractNodeKey(newNode);
         if (add && newNode != null && !nodeDictionary.ContainsKey(nodeKey))
         {
-            //nodeList.Add(newNode);
-            //int nodeKey = GetAbstractNodeKey(newNode);
-            //nodeHash.Add(nodeKey,newNode);
             nodeDictionary.Add(nodeKey, newNode);
         }
         else
         {
-            //nodeList.Remove(newNode);
-            //nodeHash.Remove(GetAbstractNodeKey(newNode));
             if (nodeDictionary.ContainsKey(nodeKey))
             {
                 nodeDictionary.Remove(nodeKey);
@@ -249,12 +217,9 @@ public class AbstractGrid
         Node startNode = startNodeInserted ? InsertNode(sNode) : LookUpAbstractNode(sNode.xVal,sNode.zVal);
         Node endNode = endNodeInserted ? InsertNode(eNode) : LookUpAbstractNode(eNode.xVal,eNode.zVal);
 
-        /*Debug.Log("Start Node is null: " + sNode==null);
-        Debug.Log("End Node is null: " + eNode==null);*/
 
         frontierHeap.Add(startNode);
         gDist = 0;
-        //HOLD ON
         while (frontierHeap.Count > 0)
         {
 
@@ -287,17 +252,12 @@ public class AbstractGrid
         {
             Node curNode = endNode;
             List<Node> newPath = new List<Node>();
-            //Debug.Log("PathSucceeded: " + endNode.visited);
 
             while (curNode != startNode)
             {
-                //pathCost += curNode.f;
-                //Node newNode = mainGrid.LookUpNode(curNode.xVal, curNode.zVal);
                 newPath.Add(curNode);
                 curNode = curNode.previouseNode;
             }
-
-            //Node lastNode = mainGrid.LookUpNode(curNode.xVal, curNode.zVal);
             newPath.Add(curNode);
             newPath.Reverse();
 
@@ -424,29 +384,17 @@ public class AbstractGrid
     }
     private void ResetAbstractGrid()
     {
-        /*for (int i = 0; i < nodeList.Count; i++)
-        {
-            nodeList[i].Reset();
-        }*/
         foreach (Node newNode in nodeDictionary.Values)
         {
             newNode.Reset();
         }
-        /*for (int i = 0; i < nodeClusterList.Count; i++)
-        {
-            for (int j = 0; j < nodeClusterList[i].nodeList.Count; j++)
-            {
-                nodeClusterList[i].nodeList[j].Reset();
-            }
-        }*/
         frontierHeap.Clear();
 
     }
     public NodeCluster GetNodeClusterFromLocation(int xVal, int zVal)
     {
-        foreach(NodeCluster newCluster in nodeClusterDictionary.Values)//for (int i = 0; i < nodeClusterList.Count; i++)
+        foreach(NodeCluster newCluster in nodeClusterDictionary.Values)
         {
-            //NodeCluster newCluster = nodeClusterList[i];
             int minX = newCluster.xVal;
             int minZ = newCluster.zVal;
             int maxX = newCluster.xVal + clusterSize;

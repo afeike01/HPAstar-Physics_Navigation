@@ -4,16 +4,10 @@ using System.Collections.Generic;
 
 public class ConnectionGrid : MonoBehaviour 
 {
-    //public List<Node> nodeList = new List<Node>();
     public List<Grid> gridList = new List<Grid>();
     public Dictionary<int, Node> nodeDictionary = new Dictionary<int, Node>();
     public Dictionary<int, List<Node>> storedPathsDictionary = new Dictionary<int, List<Node>>();
     public BinaryHeap<Node> frontierHeap = new BinaryHeap<Node>();
-
-    //public Hashtable storedPaths = new Hashtable();
-    
-    //public Hashtable nodeHash = new Hashtable();
-    
 
     private float gDist = 0;
     public float gDistInc = 1f;
@@ -23,12 +17,6 @@ public class ConnectionGrid : MonoBehaviour
 
     public Testing temporaryController;
 
-	// Use this for initialization
-	void Start () 
-    {
-	
-	}
-    
     private void Initialize()
     {
         SetConnectionNodeNeighbors();
@@ -54,7 +42,7 @@ public class ConnectionGrid : MonoBehaviour
     public Node LookUpNode(int newX, int newZ)
     {
         int nodeKey = Grid.GetNodeKey(newX, newZ);
-        if (nodeDictionary.ContainsKey(nodeKey)/*nodeHash.Contains(nodeKey)*/)
+        if (nodeDictionary.ContainsKey(nodeKey))
         {
             return nodeDictionary[nodeKey];
         }
@@ -77,28 +65,21 @@ public class ConnectionGrid : MonoBehaviour
 
                 if (isValid)
                 {
-                    //Create a new Node
-                    //Add to NodeList
                     Node newNode = new Node(refNode.gridParent, refNode.xVal, refNode.yVal, refNode.zVal, NodeType.Abstract, nodeCounter);
                     newNode.nodeConnectingTo = refNode.nodeConnectingTo;
                     nodeCounter++;
-                    //nodeList.Add(newNode);
                     int newKey = Grid.GetNodeKey(newNode);
                     nodeDictionary.Add(newKey, newNode);
-                    //nodeHash.Add(newKey, newNode);
-
-                    
                 }
 
             }
             else if (add && refNode.IsTemporary())
             {
-                //Debug.Log("Temporary Node Inserted");
                 //If an Inserted Node
-                if (!nodeDictionary.ContainsValue(refNode)/*!nodeList.Contains(refNode)*/)
+                if (!nodeDictionary.ContainsValue(refNode))
                 {
                     int newKey = Grid.GetNodeKey(refNode);
-                    nodeDictionary.Add(newKey, refNode);//nodeList.Add(refNode);
+                    nodeDictionary.Add(newKey, refNode);
                 }
             }
             else
@@ -106,7 +87,7 @@ public class ConnectionGrid : MonoBehaviour
                 //If Remove
                 int newKey = Grid.GetNodeKey(refNode);
                 if (nodeDictionary.ContainsKey(newKey))
-                    nodeDictionary.Remove(newKey);//nodeList.Remove(refNode);
+                    nodeDictionary.Remove(newKey);
                 if (refNode.IsTemporary())
                     refNode = null;
             }
@@ -115,17 +96,14 @@ public class ConnectionGrid : MonoBehaviour
     }
     public void SetConnectionNodeNeighbors()
     {
-        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; i++)
+        foreach(Node newNode in nodeDictionary.Values)
         {
-            //Node newNode = nodeList[i];
             newNode.AddNeighbor(this.LookUpNode(newNode.nodeConnectingTo.xVal, newNode.nodeConnectingTo.zVal));
-            foreach(Node newNode2 in nodeDictionary.Values)//for (int j = 0; j < nodeList.Count; j++)
+            foreach(Node newNode2 in nodeDictionary.Values)
             {
-                //Node newNode2 = nodeList[j];
                 if (newNode != newNode2&&newNode.gridParent == newNode2.gridParent)
                 {
                     newNode.AddNeighbor(newNode2);
-                    
                 }
             }
         }
@@ -197,9 +175,7 @@ public class ConnectionGrid : MonoBehaviour
 
                     List<Node> addedPath = newGrid.FindComplexPath(sNode, eNode);
                     if (addedPath != null)
-                        newPath.AddRange(addedPath);
-                    /*else
-                        Debug.Log("Did not add Null Path");*/
+                        newPath.AddRange(addedPath); 
                 }
             }
         }
@@ -258,13 +234,9 @@ public class ConnectionGrid : MonoBehaviour
 
             while (curNode != startNode)
             {
-                //pathCost += curNode.f;
-                //Node newNode = mainGrid.LookUpNode(curNode.xVal, curNode.zVal);
                 newPath.Add(curNode);
                 curNode = curNode.previouseNode;
             }
-
-            //Node lastNode = mainGrid.LookUpNode(curNode.xVal, curNode.zVal);
             newPath.Add(curNode);
             newPath.Reverse();
 
@@ -298,10 +270,6 @@ public class ConnectionGrid : MonoBehaviour
     }
     public void ResetConnectionGrid()
     {
-        /*for (int i = 0; i < nodeList.Count; i++)
-        {
-            nodeList[i].Reset();
-        }*/
         foreach (Node newNode in nodeDictionary.Values)
         {
             newNode.Reset();
@@ -313,7 +281,7 @@ public class ConnectionGrid : MonoBehaviour
         Node newNode = new Node(refNode.gridParent, refNode.xVal, refNode.yVal, refNode.zVal, NodeType.Temporary, -1);
         for (int i = 0; i < newNode.gridParent.connectionNodes.Count; i++)
         {
-            Node newNeighbor = LookUpNode(newNode.gridParent.connectionNodes[i].xVal, newNode.gridParent.connectionNodes[i].zVal);//newNode.gridParent.connectionNodes[i];
+            Node newNeighbor = LookUpNode(newNode.gridParent.connectionNodes[i].xVal, newNode.gridParent.connectionNodes[i].zVal);
             newNode.AddNeighbor(newNeighbor);
             newNeighbor.AddNeighbor(newNode);
         }
@@ -325,7 +293,7 @@ public class ConnectionGrid : MonoBehaviour
     {
         if (newNode.IsTemporary())
         {
-            foreach(Node n in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; i++)
+            foreach(Node n in nodeDictionary.Values)
             {
                 Node removeNode = null;
                 for (int j = 0; j < n.neighbors.Count; j++)
@@ -373,7 +341,7 @@ public class ConnectionGrid : MonoBehaviour
     {
         Node closestNode = null;
         float closestDist = 1000000;
-        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; i++)
+        foreach(Node newNode in nodeDictionary.Values)
         {
             float tempDist = Vector3.Distance(location, newNode.GetLocation());
             if (tempDist < closestDist)

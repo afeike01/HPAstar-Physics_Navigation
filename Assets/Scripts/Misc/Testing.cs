@@ -61,7 +61,7 @@ public class Testing : MonoBehaviour
         {
             Application.LoadLevel(0);
         }
-        if (Input.GetMouseButtonDown(1))
+        /*if (Input.GetMouseButtonDown(1))
         {
             Vector3 playerLocation = player.gameObject.transform.position;
             Node newNode = connectionGrid.GetNodeFromLocation(playerLocation);
@@ -73,7 +73,7 @@ public class Testing : MonoBehaviour
                 if (newNode != null)
                     MoveUnits(newNode);
             }
-        }
+        }*/
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -96,7 +96,7 @@ public class Testing : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetMouseButtonDown(1))
         {
             GameObject newExplosion = Instantiate(physicsExplosionPrefab, player.transform.position, Quaternion.identity) as GameObject;
             PhysicsExplosion newPExplosion = newExplosion.GetComponent<PhysicsExplosion>();

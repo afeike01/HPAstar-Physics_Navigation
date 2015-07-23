@@ -18,7 +18,6 @@ public class Grid : MonoBehaviour
     private float gDist = 0;
     public float gDistInc = 1f;
 
-    //public List<Node> nodeList = new List<Node>();
     public Dictionary<int,Node> nodeDictionary = new Dictionary<int,Node>();
 
     public int gridSize = 30;
@@ -44,7 +43,7 @@ public class Grid : MonoBehaviour
     public GameObject connectionVisual;
 
     public GameObject nodePrefab;
-    public GameObject nodePrefab02;
+    public GameObject permanentNodePrefab;
     //=============================================
     //               ConnectionGrid
     //=============================================
@@ -57,11 +56,6 @@ public class Grid : MonoBehaviour
     {
         InitializeGrid();   
 	}
-    void Update()
-    {
-        
-        
-    }
     private void InitializeGrid()
     {
         CreateHeightMap();
@@ -85,7 +79,7 @@ public class Grid : MonoBehaviour
 
         connectionGrid.ManageGridList(this);
         SetPermanentNodes();
-        
+        CreatePhysicalNodes();
     }
     private void SetPermanentNodes()
     {
@@ -127,8 +121,15 @@ public class Grid : MonoBehaviour
             currentZ += increment;
             toNewCluster = !toNewCluster;
         }
+        
     }
-    
+    private void CreatePhysicalNodes()
+    {
+        foreach (Node n in nodeDictionary.Values)
+        {
+            SpawnPhysicalNode(n);
+        }
+    }
     private AbstractGrid CreateAbstractGrid()
     {
         return new AbstractGrid(this, clusterSize);
@@ -158,7 +159,18 @@ public class Grid : MonoBehaviour
             Debug.Log("Path is NULL");
         }
     }
-    
+    private void SpawnPhysicalNode(Node newNode)
+    {
+        GameObject newPhysicalNode;
+        if (newNode.IsPermanent())
+        {
+            newPhysicalNode = Instantiate(permanentNodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+        }
+        else
+        {
+            newPhysicalNode = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+        }
+    }
     public static void SpawnNodeVisual(params Node[] nodes)
     {
         for (int i = 0; i < nodes.Length; i++)
@@ -193,12 +205,11 @@ public class Grid : MonoBehaviour
     {
         int tempZ = (int)transform.position.z;
         Node newNode = new Node(this,newX, heightMap[nodeCounter], tempZ, NodeType.Normal,nodeCounter);
-        //nodeList.Add(newNode);
         int nodeKey = GetNodeKey(newNode);
         nodeDictionary.Add(nodeKey, newNode);
         nodeCounter++;
 
-        GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+        //GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
 
         int newZ = tempZ + 1;
         for (int i = 0; i < gridSize - 1; ++i)
@@ -210,12 +221,11 @@ public class Grid : MonoBehaviour
     private void SpawnZ(int newX, int newZ)
     {
         Node newNode = new Node(this, newX, heightMap[nodeCounter], newZ, NodeType.Normal, nodeCounter);
-        //nodeList.Add(newNode);
         int nodeKey = GetNodeKey(newNode);
         nodeDictionary.Add(nodeKey, newNode);
         nodeCounter++;
 
-        GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
+        //GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
 
     }
     public static int GetNodeKey(Node newNode)
@@ -229,11 +239,6 @@ public class Grid : MonoBehaviour
     public Node LookUpNode(int newX, int newZ)
     {
         int nodeKey = GetNodeKey(newX, newZ);
-        /*if (nodeHash.Contains(nodeKey))
-        {
-            int nodeIndex = (int)nodeHash[nodeKey];
-            return nodeList[nodeIndex];
-        }*/
         if (nodeDictionary.ContainsKey(nodeKey))
         {
             return nodeDictionary[nodeKey];
@@ -246,11 +251,6 @@ public class Grid : MonoBehaviour
     public Node LookUpNode(float newX, float newZ)
     {
         int nodeKey = GetNodeKey((int)newX, (int)newZ);
-        /*if (nodeHash.Contains(nodeKey))
-        {
-            int nodeIndex = (int)nodeHash[nodeKey];
-            return nodeList[nodeIndex];
-        }*/
         if (nodeDictionary.ContainsKey(nodeKey))
         {
             return nodeDictionary[nodeKey];
@@ -263,9 +263,9 @@ public class Grid : MonoBehaviour
     
     private void AssignAllNeighboors()
     {
-        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; ++i)
+        foreach(Node newNode in nodeDictionary.Values)
         {
-            //Node newNode = nodeList[i];
+            
             Node tempNode = null;
             int cSize = clusterSize;
 
@@ -367,9 +367,7 @@ public class Grid : MonoBehaviour
             newAbstractPath = startNode.gridParent.abstractGrid.FindMultiAbstractGridPath(startNode, endNode);
         else
             newAbstractPath = startNode.gridParent.abstractGrid.FindAbstractPath(startNode, endNode);
-        //List<Node> newAbstractPath = abstractGrid.FindAbstractPath(startNode, endNode);
         
-
         List<Node> tempList = new List<Node>();
         List<Node> outList = new List<Node>();
 
@@ -475,8 +473,6 @@ public class Grid : MonoBehaviour
                         }
                             
                     }   
-
-                    
                 }
             }
 
@@ -557,10 +553,9 @@ public class Grid : MonoBehaviour
     }
     private void ResetGrid()
     {
-        foreach(Node newNode in nodeDictionary.Values)//for (int i = 0; i < nodeList.Count; ++i)
+        foreach(Node newNode in nodeDictionary.Values)
         {
             newNode.Reset();
-            //nodeList[i].Reset();
         }
         frontierHeap.Clear();
         
