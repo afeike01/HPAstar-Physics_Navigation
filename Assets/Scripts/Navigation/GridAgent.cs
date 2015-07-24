@@ -32,9 +32,17 @@ public class GridAgent : MonoBehaviour
     private float maxAirTime = 2.5f;
     private float minAirTime = 1.5f;
 
+    private Testing gameManager;
+    public float distFromPlayer = 0;
+
+    private int waitTime = 100;
+    private int waitCounter = 0;
+    private float minDistFromPlayer = 5f;
+
 	void Start () 
     {
-        Initialize();
+        //Initialize();
+        
 	}
 	
 	
@@ -43,14 +51,17 @@ public class GridAgent : MonoBehaviour
         UpdateMovement();
 	}
     
-    private void Initialize()
+    public void Initialize(Testing newGameManager)
     {
         rB = GetComponent<Rigidbody>();
         navUpdateCounter = Random.Range(50, 150);
+        gameManager = newGameManager;
     }
     private void UpdateMovement()
     {
         navUpdateTimer++;
+           
+            
         if (navUpdateTimer >= navUpdateCounter)
         {
             navUpdateTimer = 0;
@@ -59,14 +70,14 @@ public class GridAgent : MonoBehaviour
         }
         if (transform.position.y < -10)
         {
-            Destroy(this.gameObject);
+            DeactivateAgent();
         }
             
         if (rB != null)
         {
             currentVelocity = rB.velocity;
             currentMagnitude = currentVelocity.magnitude;
-            if (currentMagnitude == 0 && !isGrounded)
+            if (currentMagnitude <.1f && !isGrounded)
             {
                 ToggleIsGrounded(true);
             }
@@ -86,7 +97,7 @@ public class GridAgent : MonoBehaviour
                 //Make GridAgent Jump to another Grid
                 if (agentPath.Count > 1 && lastNode.gridParent != agentPath[1].gridParent)
                 {
-                    ResetVelocity();
+                    waitCounter = 0;
                     float airTime = 2f;// Random.Range(minAirTime, maxAirTime);
                     Launch(agentPath[1].GetLocation(), airTime);
                 }
@@ -108,6 +119,8 @@ public class GridAgent : MonoBehaviour
                 if(startNode!=null&&startNode.gridParent==newEndNode.gridParent)
                     GetPath(newEndNode);
             }
+            
+            //HandleRotation
             if (isGrounded)
             {
                 if (currentNode != null)
@@ -117,10 +130,24 @@ public class GridAgent : MonoBehaviour
                     Quaternion newRotation = Quaternion.LookRotation(newDirection);
                     Quaternion newSmoothRotation = Quaternion.Slerp(transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
                     rB.MoveRotation(newSmoothRotation);
+
+                    waitCounter = 0;
                 }
-                
+
             }
-            
+        }
+        if (gameManager)
+        {
+            distFromPlayer = Vector3.Distance(transform.position, gameManager.GetPlayerLocation());
+            if (distFromPlayer > minDistFromPlayer && currentMagnitude < .05f)
+            {
+                waitCounter++;
+                if (waitCounter >= waitTime)
+                {
+                    waitCounter = 0;
+                    Launch(gameManager.GetPlayerLocation(), 2);
+                }
+            }
         }
     }
     private void ExecuteMove()
@@ -212,6 +239,7 @@ public class GridAgent : MonoBehaviour
     }
     private void Launch(Vector3 destination, float airTime)
     {
+        ResetVelocity();
         Vector3 launchVelocity = GetLaunchVelocity(transform.position, destination, airTime);
         rB.AddForce(launchVelocity, ForceMode.VelocityChange);
         ToggleIsGrounded(false);
@@ -228,5 +256,14 @@ public class GridAgent : MonoBehaviour
     private void ToggleIsGrounded(bool newVal)
     {
         isGrounded = newVal;
+    }
+    public void DeactivateAgent(bool addScore = true)
+    {
+        if (addScore)
+        {
+            gameManager.AddScore();
+            gameManager.SpawnSingleUnit();
+        }
+        Destroy(this.gameObject);
     }
 }

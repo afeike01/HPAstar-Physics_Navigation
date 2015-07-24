@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Misc\DelayDestroy.cs" />
+     <Compile Include="Assets\Scripts\Misc\Ground.cs" />
      <Compile Include="Assets\Scripts\Misc\HideGameObject.cs" />
      <Compile Include="Assets\Scripts\Misc\RigidbodyControl.cs" />
      <Compile Include="Assets\Scripts\Misc\Testing.cs" />

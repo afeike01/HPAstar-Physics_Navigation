@@ -19,6 +19,7 @@ public class Grid : MonoBehaviour
     public float gDistInc = 1f;
 
     public Dictionary<int,Node> nodeDictionary = new Dictionary<int,Node>();
+    public List<Node> permanentNodes = new List<Node>();
 
     public int gridSize = 30;
     public float[] heightMap;
@@ -96,6 +97,7 @@ public class Grid : MonoBehaviour
                 if (newNode != null)
                 {
                     newNode.SetPermanent(true);
+                    permanentNodes.Add(newNode);
                     //GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
                 }
             }
@@ -115,6 +117,7 @@ public class Grid : MonoBehaviour
                 if (newNode != null)
                 {
                     newNode.SetPermanent(true);
+                    permanentNodes.Add(newNode);
                     //GameObject newPrefab = Instantiate(nodePrefab, newNode.GetLocation(), Quaternion.identity) as GameObject;
                 }
             }
@@ -373,7 +376,7 @@ public class Grid : MonoBehaviour
 
         if (newAbstractPath == null)
         {
-            Debug.Log("Abstract Path is Null");
+            //Debug.Log("Abstract Path is Null");
             return null;
         }
 

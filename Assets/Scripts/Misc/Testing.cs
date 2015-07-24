@@ -22,27 +22,13 @@ public class Testing : MonoBehaviour
 
     public GameObject player;
 
-    public Transform targetTransform;
-    private Vector3 target;
-    private float x = 0.0f;
-    private float y = 0.0f;
-    public float xSpeed = 250.0f;
-    public float ySpeed = 120.0f;
-    public float yMinLimit = -20;
-    public float yMaxLimit = 80;
-    public float distance = 10.0f;
-
-    public float XSensitivity = 2f;
-    public float YSensitivity = 2f;
-    private Quaternion m_CharacterTargetRot;
-    private Quaternion m_CameraTargetRot;
-    public bool clampVerticalRotation = true;
-    public float MinimumX = -90F;
-    public float MaximumX = 90F;
-    public bool smooth;
-    public float smoothTime = 5f;
-
     public GameObject physicsExplosionPrefab;
+
+    public int score = 0;
+    private int spawnRate = 1000;
+    private int spawnRateCounter = 1000;
+
+    private bool gameOver = false;
 
 	// Use this for initialization
 	void Start () 
@@ -55,25 +41,23 @@ public class Testing : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.N))
         {
-            SpawnUnit();
+            SpawnMultiUnits();
         }
+        if (!gameOver)
+        {
+            spawnRateCounter++;
+            if (spawnRateCounter >= spawnRate)
+            {
+                spawnRateCounter = 0;
+                SpawnMultiUnits();
+            }
+        }
+        
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.LoadLevel(0);
         }
-        /*if (Input.GetMouseButtonDown(1))
-        {
-            Vector3 playerLocation = player.gameObject.transform.position;
-            Node newNode = connectionGrid.GetNodeFromLocation(playerLocation);
-            if (newNode != null)
-                MoveUnits(newNode);
-            else
-            {
-                newNode = connectionGrid.GetClosestConnectionNode(playerLocation);
-                if (newNode != null)
-                    MoveUnits(newNode);
-            }
-        }*/
+        
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -104,40 +88,57 @@ public class Testing : MonoBehaviour
         }
 	}
     
-    public Node GetPlayerLocation()
+    public Node GetPlayerNodeLocation()
     {
         Vector3 playerLocation = player.gameObject.transform.position;
         Node newNode = connectionGrid.GetNodeFromLocation(playerLocation);
         return newNode;
     }
-    void SpawnUnit()
+    public Vector3 GetPlayerLocation()
+    {
+        return player.transform.position;
+    }
+    public void SpawnMultiUnits()
     {
         Grid startGrid = connectionGrid.gridList[1];
-        startNode = startGrid.LookUpNode(startGrid.transform.position.x + (startGrid.gridSize / 2), startGrid.transform.position.z + (startGrid.gridSize / 2));
-
-        float range = 10f;
+        Vector3 offset = new Vector3(0,5,0);
 
         for (int i = 0; i < agentCount; i++)
         {
-            Vector3 initialLocation = startNode.GetLocation();
-            Vector3 offset = new Vector3(Random.Range(-range, range), 1, Random.Range(-range, range));
-            Vector3 spawnLocation = initialLocation + offset;
+            int randomIndex = Random.Range(0, startGrid.permanentNodes.Count);
+            Vector3 spawnLocation = startGrid.permanentNodes[randomIndex].GetLocation() + offset;
+
             GameObject newUnit = Instantiate(unitPrefab, spawnLocation, Quaternion.identity) as GameObject;
             GridAgent newAgent = newUnit.GetComponent<GridAgent>();
             newAgent.SetNavigationGrid(connectionGrid);
-            myAgents.Add(newAgent);
+            newAgent.Initialize(this);
+            //myAgents.Add(newAgent);
         }
         
 
     }
-    void MoveUnits(Node newEndNode)
+    public void SpawnSingleUnit()
     {
-        for (int i = 0; i < myAgents.Count; i++)
-        {
-            if (myAgents[i] != null)
-            {
-                myAgents[i].GetPath(newEndNode);
-            }
-        }
+        Grid startGrid = connectionGrid.gridList[1];
+        Vector3 offset = new Vector3(0, 5, 0);
+
+        int randomIndex = Random.Range(0, startGrid.permanentNodes.Count);
+        Vector3 spawnLocation = startGrid.permanentNodes[randomIndex].GetLocation() + offset;
+
+        GameObject newUnit = Instantiate(unitPrefab, spawnLocation, Quaternion.identity) as GameObject;
+        GridAgent newAgent = newUnit.GetComponent<GridAgent>();
+        newAgent.SetNavigationGrid(connectionGrid);
+        newAgent.Initialize(this);
+        //myAgents.Add(newAgent);
+    }
+    public void AddScore()
+    {
+        score++;
+        //Debug.Log("Score: " + score);
+    }
+    public void EndGame()
+    {
+        gameOver = true;
+        Debug.Log("GameOver");
     }
 }

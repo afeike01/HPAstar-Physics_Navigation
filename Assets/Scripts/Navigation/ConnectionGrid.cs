@@ -26,7 +26,7 @@ public class ConnectionGrid : MonoBehaviour
     }
     public Node GetPlayerLocation()
     {
-        return temporaryController.GetPlayerLocation();
+        return temporaryController.GetPlayerNodeLocation();
     }
     public bool DisableNode(Vector3 nodeLocation)
     {
@@ -330,6 +330,16 @@ public class ConnectionGrid : MonoBehaviour
                     newNode = tempNode;
                     break;
                 }
+        }
+        if (newNode != null && !newNode.available)
+        {
+            for (int i = 0; i < newNode.neighbors.Count; i++)
+            {
+                if (newNode.neighbors[i].available)
+                {
+                    newNode = newNode.neighbors[i];
+                }
+            }
         }
         if (newNode == null)
         {
