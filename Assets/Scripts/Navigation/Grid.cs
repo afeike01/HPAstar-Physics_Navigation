@@ -478,7 +478,6 @@ public class Grid : MonoBehaviour
                     }   
                 }
             }
-
         }
         bool pathExists = endNode.visited;
         if (pathExists)
@@ -575,7 +574,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public bool ToggleNodeAvailability(Node newNode, bool availability = false)
+    /*public bool ToggleNodeAvailability(Node newNode, bool availability = false)
     {
         if (newNode != null)
         {
@@ -596,7 +595,7 @@ public class Grid : MonoBehaviour
         }
         else
             return false;
-    }
+    }*/
     /*
      * Connection Nodes in the Grid Class are Abstract Nodes
      */ 

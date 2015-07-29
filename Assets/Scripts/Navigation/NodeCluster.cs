@@ -106,6 +106,7 @@ public class NodeCluster
         Node refStartNode = mainAbstractGrid.mainGrid.LookUpNode(startNode.xVal, startNode.zVal);
         Node refEndNode = mainAbstractGrid.mainGrid.LookUpNode(endNode.xVal, endNode.zVal);
 
+        //This is questionable, consider revision
         float newVal = mainAbstractGrid.mainGrid.DoesPathExist(refStartNode, refEndNode);
         int connectionKey = GetConnectionKey(startNode, endNode);
         if (!storedPathsDictionary.ContainsKey(connectionKey))

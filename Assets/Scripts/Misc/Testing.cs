@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Testing : MonoBehaviour 
 {
@@ -24,11 +25,13 @@ public class Testing : MonoBehaviour
 
     public GameObject physicsExplosionPrefab;
 
-    public int score = 0;
     private int spawnRate = 1000;
     private int spawnRateCounter = 1000;
 
     private bool gameOver = false;
+    private const int MAX_UNITS = 500;
+    public int currentNumUnits;
+    public Text numUnitsText;
 
 	// Use this for initialization
 	void Start () 
@@ -39,6 +42,8 @@ public class Testing : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
+        currentNumUnits = myAgents.Count;
+        UpdateText();
         if (Input.GetKeyDown(KeyCode.N))
         {
             SpawnMultiUnits();
@@ -100,11 +105,40 @@ public class Testing : MonoBehaviour
     }
     public void SpawnMultiUnits()
     {
+        if (gameOver)
+            return;
+
         Grid startGrid = connectionGrid.gridList[1];
         Vector3 offset = new Vector3(0,5,0);
 
         for (int i = 0; i < agentCount; i++)
         {
+            if (myAgents.Count < MAX_UNITS)
+            {
+                int randomIndex = Random.Range(0, startGrid.permanentNodes.Count);
+                Vector3 spawnLocation = startGrid.permanentNodes[randomIndex].GetLocation() + offset;
+
+                GameObject newUnit = Instantiate(unitPrefab, spawnLocation, Quaternion.identity) as GameObject;
+                GridAgent newAgent = newUnit.GetComponent<GridAgent>();
+                newAgent.SetNavigationGrid(connectionGrid);
+                newAgent.Initialize(this);
+                myAgents.Add(newAgent);
+            }
+            
+        }
+        
+
+    }
+    public void SpawnSingleUnit()
+    {
+        if (gameOver)
+            return;
+
+        if (myAgents.Count < MAX_UNITS)
+        {
+            Grid startGrid = connectionGrid.gridList[1];
+            Vector3 offset = new Vector3(0, 5, 0);
+
             int randomIndex = Random.Range(0, startGrid.permanentNodes.Count);
             Vector3 spawnLocation = startGrid.permanentNodes[randomIndex].GetLocation() + offset;
 
@@ -112,29 +146,17 @@ public class Testing : MonoBehaviour
             GridAgent newAgent = newUnit.GetComponent<GridAgent>();
             newAgent.SetNavigationGrid(connectionGrid);
             newAgent.Initialize(this);
-            //myAgents.Add(newAgent);
+            myAgents.Add(newAgent);
         }
         
-
     }
-    public void SpawnSingleUnit()
+    private void UpdateText()
     {
-        Grid startGrid = connectionGrid.gridList[1];
-        Vector3 offset = new Vector3(0, 5, 0);
-
-        int randomIndex = Random.Range(0, startGrid.permanentNodes.Count);
-        Vector3 spawnLocation = startGrid.permanentNodes[randomIndex].GetLocation() + offset;
-
-        GameObject newUnit = Instantiate(unitPrefab, spawnLocation, Quaternion.identity) as GameObject;
-        GridAgent newAgent = newUnit.GetComponent<GridAgent>();
-        newAgent.SetNavigationGrid(connectionGrid);
-        newAgent.Initialize(this);
-        //myAgents.Add(newAgent);
+        numUnitsText.text = ("Number of Units: " + myAgents.Count);
     }
-    public void AddScore()
+    public void AddScore(GridAgent newAgent)
     {
-        score++;
-        //Debug.Log("Score: " + score);
+        myAgents.Remove(newAgent);
     }
     public void EndGame()
     {

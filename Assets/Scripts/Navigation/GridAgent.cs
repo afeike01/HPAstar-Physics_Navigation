@@ -261,7 +261,7 @@ public class GridAgent : MonoBehaviour
     {
         if (addScore)
         {
-            gameManager.AddScore();
+            gameManager.AddScore(this);
             gameManager.SpawnSingleUnit();
         }
         Destroy(this.gameObject);
